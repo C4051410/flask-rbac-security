@@ -2,6 +2,8 @@ from flask import Flask, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from config import Config
 from flask_wtf.csrf import CSRFProtect
+from cryptography.fernet import Fernet
+
 csrf = CSRFProtect()
 
 
@@ -14,6 +16,9 @@ def create_app():
     csrf.init_app(app)
     #Initialise SQLAlchemy with flask app
     db.init_app(app)
+    # Create Fernet instance for bio encryption
+    encryption_key = app.config['BIO_ENCRYPTION_KEY']
+    app.fernet = Fernet(encryption_key)
 
     from .routes import main
     app.register_blueprint(main)
@@ -43,12 +48,13 @@ def create_app():
         ]
 
         for user_data in users:
-            # User.__init__ now securely hashes the password
+            encrypted_bio = app.fernet.encrypt(user_data["bio"].encode())
+
             user = User(
                 username=user_data["username"],
                 password=user_data["password"],
                 role=user_data["role"],
-                bio=user_data["bio"]
+                bio=encrypted_bio
             )
             db.session.add(user)
 

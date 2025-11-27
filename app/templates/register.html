@@ -15,14 +15,14 @@
 <form method="POST" novalidate>
     {{ csrf_token() }}
 
-    <label>Username (email):</label>
+    <label>Email:</label>
     <input type="email" name="username" required><br>
 
     <label>Password:</label>
     <input type="password" name="password" minlength="10" maxlength="64" required><br>
 
     <label>Biography:</label>
-    <textarea name="bio" maxlength="500" rows="4" cols="50"></textarea><br>
+    <textarea name="bio" maxlength="500"></textarea><br>
 
     <input type="submit" value="Register">
 </form>
