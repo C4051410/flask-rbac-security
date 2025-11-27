@@ -1,11 +1,9 @@
-import os
-from cryptography.fernet import Fernet
-
 class Config:
-    DEBUG = True
+    DEBUG = False
+    TESTING = False
 
-    SECRET_KEY = os.environ.get("SECRET_KEY") or "dev-key-change-me"
-    BIO_ENCRYPTION_KEY = os.environ.get("BIO_ENCRYPTION_KEY") or b"s7-eMmr_4NtDFMSTl1i0d0aX5qUysBTY7E5QR9zv-Io="
+
+    SECRET_KEY = "replace-this-with-a-long-random-string-123!@#"
 
     SQLALCHEMY_DATABASE_URI = 'sqlite:///site.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False

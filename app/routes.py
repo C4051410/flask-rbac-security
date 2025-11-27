@@ -1,9 +1,8 @@
+
 import traceback
 from flask import request, render_template, redirect, url_for, session, Blueprint, flash, abort
 from app import db
 from app.models import User
-from flask import current_app
-
 
 main = Blueprint('main', __name__)
 
@@ -41,13 +40,9 @@ def dashboard():
     #access check for authenticated users
     if 'user' in session:
         username = session['user']
-        encrypted_bio = session['bio']
-        bio = current_app.fernet.decrypt(encrypted_bio).decode()
-
+        bio = session['bio']
         return render_template('dashboard.html', username=username, bio=bio)
-
     return redirect(url_for('main.login'))
-
 
 
 @main.route('/register', methods=['GET', 'POST'])
@@ -74,15 +69,7 @@ def register():
             return render_template('register.html')
 
         #hashes password automatically
-        encrypted_bio = current_app.fernet.encrypt(bio.encode())
-
-        new_user = User(
-            username=username,
-            password=password,
-            role=role,
-            bio=encrypted_bio
-        )
-
+        new_user = User(username=username, password=password, role=role, bio=bio)
         db.session.add(new_user)
         db.session.commit()
 
@@ -107,6 +94,8 @@ def moderator():
         stack = ''.join(traceback.format_stack(limit=25))
         abort(403, description=f"Access denied.\n\n--- STACK (demo) ---\n{stack}")
     return render_template('moderator.html')
+
+
 
 
 @main.route('/user-dashboard')
@@ -160,3 +149,4 @@ def logout():
     session.pop('bio', None)
     flash('You have been logged out successfully.', 'success')
     return redirect(url_for('main.home'))
+

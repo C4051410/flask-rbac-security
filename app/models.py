@@ -8,8 +8,7 @@ class User(db.Model):
     # Increased size to store password hash
     password = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(50), default='user', nullable=False)
-    bio = db.Column(db.LargeBinary, nullable=False)
-
+    bio = db.Column(db.String(500), nullable=False)
 
     def __init__(self, username, password, role, bio):
         #hashes password on creation
@@ -29,7 +28,3 @@ class User(db.Model):
     def __repr__(self):
         #debugging without revealing passwords
         return f'<User {self.username}>'
-
-
-
-

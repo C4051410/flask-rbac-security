@@ -1,11 +1,6 @@
-from flask import Flask, request, redirect, url_for, session
+from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from config import Config
-from flask_wtf.csrf import CSRFProtect
-from cryptography.fernet import Fernet
-
-csrf = CSRFProtect()
-
 
 db = SQLAlchemy()
 
@@ -13,26 +8,34 @@ db = SQLAlchemy()
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
-    csrf.init_app(app)
-    #Initialise SQLAlchemy with flask app
+
     db.init_app(app)
-    # Create Fernet instance for bio encryption
-    encryption_key = app.config['BIO_ENCRYPTION_KEY']
-    app.fernet = Fernet(encryption_key)
 
+    # Register blueprints
     from .routes import main
+    from .errors import errors
     app.register_blueprint(main)
+    app.register_blueprint(errors)
 
-    # HTTP Security Headers (Part E)
+    # Custom Error Pages (Part I)
+    @app.errorhandler(403)
+    def forbidden(e):
+        return render_template("403.html"), 403
+
+    @app.errorhandler(404)
+    def not_found(e):
+        return render_template("404.html"), 404
+
+    @app.errorhandler(500)
+    def server_error(e):
+        return render_template("500.html"), 500
+
+    # Security Headers (Part E)
     @app.after_request
     def add_security_headers(response):
-        #Limits all resources to only come from server
         response.headers['Content-Security-Policy'] = "default-src 'self'; frame-ancestors 'none';"
-        #Disallows site from being framed
         response.headers['X-Frame-Options'] = 'DENY'
         response.headers['X-Content-Type-Options'] = 'nosniff'
-        response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
-        response.headers['X-XSS-Protection'] = '1; mode=block'
         response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
         return response
 
@@ -40,22 +43,16 @@ def create_app():
         from .models import User
         db.drop_all()
         db.create_all()
-        #ensures no plain text passwords are stored
+
+        # seed users
         users = [
             {"username": "user1@email.com", "password": "Userpass!23", "role": "user", "bio": "I'm a basic user"},
             {"username": "mod1@email.com", "password": "Modpass!23", "role": "moderator", "bio": "I'm a moderator"},
             {"username": "admin1@email.com", "password": "Adminpass!23", "role": "admin", "bio": "I'm an administrator"}
         ]
 
-        for user_data in users:
-            encrypted_bio = app.fernet.encrypt(user_data["bio"].encode())
-
-            user = User(
-                username=user_data["username"],
-                password=user_data["password"],
-                role=user_data["role"],
-                bio=encrypted_bio
-            )
+        for u in users:
+            user = User(username=u["username"], password=u["password"], role=u["role"], bio=u["bio"])
             db.session.add(user)
 
         db.session.commit()
