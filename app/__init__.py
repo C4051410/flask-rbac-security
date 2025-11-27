@@ -1,6 +1,9 @@
 from flask import Flask, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from config import Config
+from flask_wtf.csrf import CSRFProtect
+csrf = CSRFProtect()
+
 
 db = SQLAlchemy()
 
@@ -8,7 +11,8 @@ db = SQLAlchemy()
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
-#Initialise SQLAlchemy with flask app
+    csrf.init_app(app)
+    #Initialise SQLAlchemy with flask app
     db.init_app(app)
 
     from .routes import main
@@ -20,7 +24,7 @@ def create_app():
         #Limits all resources to only come from server
         response.headers['Content-Security-Policy'] = "default-src 'self'; frame-ancestors 'none';"
         #Disallows site from being framed
-        response.headers['X-Frame-Options'] = 'DENY
+        response.headers['X-Frame-Options'] = 'DENY'
         response.headers['X-Content-Type-Options'] = 'nosniff'
         response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
         response.headers['X-XSS-Protection'] = '1; mode=block'

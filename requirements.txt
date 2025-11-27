@@ -1,3 +1,4 @@
 flask
 flask-sqlalchemy
 werkzeug
+Flask-WTF==1.2.1

@@ -1,19 +1,29 @@
 {% extends "base.html" %}
 {% block title %}Register{% endblock %}
+
 {% block content %}
 <h1>Register</h1>
-<form method="POST" novalidate>
-  Username: <input type="email" name="username" required><br>
-  Password: <input type="password" name="password" minlength="6" maxlength="64" required><br>
-  Biography: <textarea name="bio" maxlength="500" rows="4" cols="50"></textarea>
-  <input type="submit" value="Register">
-</form>
 
 {% with messages = get_flashed_messages(with_categories=true) %}
-{% if messages %}
-{% for category, message in messages %}
-<p class="text-danger">{{ message }}</p>
-{% endfor %}
-{% endif %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <p class="text-danger">{{ message }}</p>
+    {% endfor %}
+  {% endif %}
 {% endwith %}
+
+<form method="POST" novalidate>
+    {{ csrf_token() }}
+
+    <label>Username (email):</label>
+    <input type="email" name="username" required><br>
+
+    <label>Password:</label>
+    <input type="password" name="password" minlength="10" maxlength="64" required><br>
+
+    <label>Biography:</label>
+    <textarea name="bio" maxlength="500" rows="4" cols="50"></textarea><br>
+
+    <input type="submit" value="Register">
+</form>
 {% endblock %}
