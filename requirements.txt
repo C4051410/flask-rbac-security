@@ -1,4 +1,6 @@
-
 flask
 flask-sqlalchemy
 werkzeug
+flask-wtf
+cryptography
+bleach
