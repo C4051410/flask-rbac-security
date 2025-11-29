@@ -3,7 +3,7 @@ class Config:
     TESTING = False
 
 
-    SECRET_KEY = "replace-this-with-a-long-random-string-123!@#"
+    SECRET_KEY = "j151095n10n51095n108hn15u9n1"
 
     SQLALCHEMY_DATABASE_URI = 'sqlite:///site.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False

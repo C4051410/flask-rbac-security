@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template
 
 errors = Blueprint("errors", __name__)
-
+#logic for all initial error pages
 @errors.app_errorhandler(403)
 def error_403(e):
     return render_template("403.html"), 403

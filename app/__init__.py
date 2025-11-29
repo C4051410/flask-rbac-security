@@ -11,13 +11,13 @@ def create_app():
 
     db.init_app(app)
 
-    # Register blueprints
+    #Register initial blueprints
     from .routes import main
     from .errors import errors
     app.register_blueprint(main)
     app.register_blueprint(errors)
 
-    # Custom Error Pages (Part I)
+    #logic for error pages using html ones
     @app.errorhandler(403)
     def forbidden(e):
         return render_template("403.html"), 403
@@ -30,7 +30,7 @@ def create_app():
     def server_error(e):
         return render_template("500.html"), 500
 
-    # Security Headers (Part E)
+
     @app.after_request
     def add_security_headers(response):
         response.headers['Content-Security-Policy'] = "default-src 'self'; frame-ancestors 'none';"
@@ -44,7 +44,7 @@ def create_app():
         db.drop_all()
         db.create_all()
 
-        # seed users
+        #admin, moderator and user pre initialised users
         users = [
             {"username": "user1@email.com", "password": "Userpass!23", "role": "user", "bio": "I'm a basic user"},
             {"username": "mod1@email.com", "password": "Modpass!23", "role": "moderator", "bio": "I'm a moderator"},
